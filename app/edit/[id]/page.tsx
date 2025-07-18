@@ -7,6 +7,7 @@ type Entry = {
   id: string
   date: string
   content: string
+  updatedAt?: string
 }
 
 export default function EditEntryPage() {
@@ -25,14 +26,20 @@ export default function EditEntryPage() {
     }
   }, [id])
 
-  const handleSave = () => {
-    if (!entry) return
-    const updatedEntry = { ...entry, content }
-    const saved: Entry[] = JSON.parse(localStorage.getItem('entries') || '[]')
-    const updated = saved.map((e) => (e.id === entry.id ? updatedEntry : e))
-    localStorage.setItem('entries', JSON.stringify(updated))
-    router.push('/')
+const handleSave = () => {
+  if (!entry) return
+
+  const updatedEntry = {
+    ...entry,
+    content,
+    updatedAt: new Date().toISOString(), // ← ここで現在の時刻を記録
   }
+
+  const saved: Entry[] = JSON.parse(localStorage.getItem('entries') || '[]')
+  const updated = saved.map((e) => (e.id === entry.id ? updatedEntry : e))
+  localStorage.setItem('entries', JSON.stringify(updated))
+  router.push('/')
+}
 
   if (!entry) return <p className="p-4">読み込み中...</p>
 

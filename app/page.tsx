@@ -8,6 +8,7 @@ type Entry = {
   id: string
   date: string
   content: string
+  updatedAt?: string
 }
 
 export default function Home() {
