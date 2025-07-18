@@ -2,6 +2,7 @@
 
 import Link from "next/link"
 import { useEffect, useState } from "react"
+import EntryCard from "../components/EntryCard" // ← これを追加！
 
 type Entry = {
   id: string
@@ -33,12 +34,7 @@ export default function Home() {
           <p className="text-gray-400">まだ記録がありません。</p>
         ) : (
           entries.map((entry) => (
-            <div key={entry.id} className="border rounded p-4 bg-white shadow">
-              <p className="text-sm text-gray-500 mb-2">
-                {new Date(entry.date).toLocaleString()}
-              </p>
-              <p>{entry.content}</p>
-            </div>
+            <EntryCard key={entry.id} entry={entry} />
           ))
         )}
       </div>
