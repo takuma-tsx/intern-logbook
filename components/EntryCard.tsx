@@ -13,7 +13,7 @@ type Entry = {
 export default function EntryCard({ entry }: { entry: Entry }) {
   return (
     <div className="border rounded p-4 bg-white shadow">
-      <div className="flex justify-between text-sm text-gray-500 mb-2">
+      <div className="text-sm text-gray-500 flex justify-end space-x-4 mb-2">
         <span>🕒 作成: {new Date(entry.date).toLocaleString()}</span>
         {entry.updatedAt && (
           <span>✏️ 編集: {new Date(entry.updatedAt).toLocaleString()}</span>
