@@ -2,7 +2,7 @@
 
 import Link from "next/link"
 import { useEffect, useState } from "react"
-import EntryCard from "../components/EntryCard" // ← これを追加！
+import EntryCard from "../components/EntryCard"
 
 type Entry = {
   id: string
@@ -13,11 +13,16 @@ type Entry = {
 
 export default function Home() {
   const [entries, setEntries] = useState<Entry[]>([])
+  const [filterDate, setFilterDate] = useState('')
 
   useEffect(() => {
     const saved = JSON.parse(localStorage.getItem('entries') || '[]')
     setEntries(saved)
   }, [])
+
+  const visibleEntries = filterDate
+    ? entries.filter((e) => e.date.startsWith(filterDate))
+    : entries
 
   return (
     <main className="p-6 max-w-xl mx-auto">
@@ -30,11 +35,28 @@ export default function Home() {
         + 新しいエントリを追加
       </Link>
 
+      <div className="my-4">
+        <input
+          type="date"
+          className="border rounded p-2"
+          value={filterDate}
+          onChange={(e) => setFilterDate(e.target.value)}
+        />
+        {filterDate && (
+          <button
+            onClick={() => setFilterDate('')}
+            className="ml-2 text-blue-600 underline text-sm"
+          >
+            絞り込みをクリア
+          </button>
+        )}
+      </div>
+
       <div className="mt-8 space-y-4">
-        {entries.length === 0 ? (
-          <p className="text-gray-400">まだ記録がありません。</p>
+        {visibleEntries.length === 0 ? (
+          <p className="text-gray-400">表示できる記録がありません。</p>
         ) : (
-          entries.map((entry) => (
+          visibleEntries.map((entry) => (
             <EntryCard key={entry.id} entry={entry} />
           ))
         )}
