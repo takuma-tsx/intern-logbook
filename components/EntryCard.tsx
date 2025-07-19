@@ -19,7 +19,9 @@ export default function EntryCard({ entry }: { entry: Entry }) {
           <span>✏️ 編集: {new Date(entry.updatedAt).toLocaleString()}</span>
         )}
       </div>
-      <ReactMarkdown className="prose prose-sm">{entry.content}</ReactMarkdown>
+    <div className="prose prose-sm">
+    <ReactMarkdown>{entry.content}</ReactMarkdown>
+    </div>
       <div className="mt-4 text-right">
         <Link
           href={`/edit/${entry.id}`}
