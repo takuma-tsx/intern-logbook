@@ -13,16 +13,21 @@ type Entry = {
 
 export default function Home() {
   const [entries, setEntries] = useState<Entry[]>([])
-  const [filterDate, setFilterDate] = useState('')
+  const [search, setSearch] = useState("")
 
   useEffect(() => {
-    const saved = JSON.parse(localStorage.getItem('entries') || '[]')
-    setEntries(saved)
+    const saved: Entry[] = JSON.parse(localStorage.getItem('entries') || '[]')
+    const sorted = saved.sort((a: Entry, b: Entry) => {
+      const dateA = new Date(b.updatedAt || b.date).getTime()
+      const dateB = new Date(a.updatedAt || a.date).getTime()
+      return dateA - dateB
+    })
+    setEntries(sorted)
   }, [])
 
-  const visibleEntries = filterDate
-    ? entries.filter((e) => e.date.startsWith(filterDate))
-    : entries
+  const filteredEntries = entries.filter(entry =>
+    entry.content.toLowerCase().includes(search.toLowerCase())
+  )
 
   return (
     <main className="p-6 max-w-xl mx-auto">
@@ -31,32 +36,23 @@ export default function Home() {
         気づきや学びを記録しよう。
       </p>
 
-      <Link href="/new" className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded">
+      <Link href="/new" className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded block w-fit mb-4">
         + 新しいエントリを追加
       </Link>
 
-      <div className="my-4">
-        <input
-          type="date"
-          className="border rounded p-2"
-          value={filterDate}
-          onChange={(e) => setFilterDate(e.target.value)}
-        />
-        {filterDate && (
-          <button
-            onClick={() => setFilterDate('')}
-            className="ml-2 text-blue-600 underline text-sm"
-          >
-            絞り込みをクリア
-          </button>
-        )}
-      </div>
+      <input
+        type="text"
+        placeholder="キーワードで検索"
+        value={search}
+        onChange={(e) => setSearch(e.target.value)}
+        className="w-full border border-gray-300 rounded px-3 py-2 mb-6"
+      />
 
-      <div className="mt-8 space-y-4">
-        {visibleEntries.length === 0 ? (
-          <p className="text-gray-400">表示できる記録がありません。</p>
+      <div className="space-y-4">
+        {filteredEntries.length === 0 ? (
+          <p className="text-gray-400">該当する記録がありません。</p>
         ) : (
-          visibleEntries.map((entry) => (
+          filteredEntries.map((entry) => (
             <EntryCard key={entry.id} entry={entry} />
           ))
         )}
