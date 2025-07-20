@@ -8,6 +8,7 @@ type Entry = {
   date: string
   content: string
   updatedAt?: string
+  tags?: string[]
 }
 
 export default function EditEntryPage() {
@@ -16,6 +17,7 @@ export default function EditEntryPage() {
 
   const [entry, setEntry] = useState<Entry | null>(null)
   const [content, setContent] = useState('')
+  const [tags, setTags] = useState('')
 
   useEffect(() => {
     const saved: Entry[] = JSON.parse(localStorage.getItem('entries') || '[]')
@@ -23,23 +25,27 @@ export default function EditEntryPage() {
     if (found) {
       setEntry(found)
       setContent(found.content)
+      setTags(found.tags?.join(', ') || '')
     }
   }, [id])
 
-const handleSave = () => {
-  if (!entry) return
+  const handleSave = () => {
+    if (!entry) return
+    const updatedEntry: Entry = {
+      ...entry,
+      content,
+      updatedAt: new Date().toISOString(),
+      tags: tags
+        .split(',')
+        .map((tag) => tag.trim())
+        .filter((tag) => tag !== ''),
+    }
 
-  const updatedEntry = {
-    ...entry,
-    content,
-    updatedAt: new Date().toISOString(), // ← ここで現在の時刻を記録
+    const saved: Entry[] = JSON.parse(localStorage.getItem('entries') || '[]')
+    const updated = saved.map((e) => (e.id === entry.id ? updatedEntry : e))
+    localStorage.setItem('entries', JSON.stringify(updated))
+    router.push('/')
   }
-
-  const saved: Entry[] = JSON.parse(localStorage.getItem('entries') || '[]')
-  const updated = saved.map((e) => (e.id === entry.id ? updatedEntry : e))
-  localStorage.setItem('entries', JSON.stringify(updated))
-  router.push('/')
-}
 
   if (!entry) return <p className="p-4">読み込み中...</p>
 
@@ -50,6 +56,13 @@ const handleSave = () => {
         className="w-full border p-2 rounded min-h-[150px]"
         value={content}
         onChange={(e) => setContent(e.target.value)}
+      />
+      <input
+        type="text"
+        placeholder="カンマ区切りでタグ入力（例: React,学び）"
+        className="w-full border p-2 rounded mt-4"
+        value={tags}
+        onChange={(e) => setTags(e.target.value)}
       />
       <button
         onClick={handleSave}
