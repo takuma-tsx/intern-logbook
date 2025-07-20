@@ -66,13 +66,16 @@ export default function EntryCard({ entry }: { entry: Entry }) {
       {entry.tags && entry.tags.length > 0 && (
         <div className="mt-4 flex flex-wrap gap-2">
           {entry.tags.map((tag) => (
-            <span key={tag} className="bg-gray-200 text-gray-700 px-2 py-1 text-xs rounded">
+            <Link
+              key={tag}
+              href={`/?tag=${encodeURIComponent(tag)}`}
+              className="bg-gray-200 text-gray-700 px-2 py-1 text-xs rounded hover:bg-gray-300"
+            >
               #{tag}
-            </span>
+            </Link>
           ))}
         </div>
       )}
-
       <div className="mt-4 text-right space-x-4">
         <Link
           href={`/edit/${entry.id}`}

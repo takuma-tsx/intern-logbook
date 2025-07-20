@@ -1,75 +1,75 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { useParams, useRouter } from 'next/navigation'
+import { useRouter } from 'next/navigation'
+import { useParams } from 'next/navigation'
 
 type Entry = {
   id: string
   date: string
-  content: string
   updatedAt?: string
+  content: string
   tags?: string[]
 }
 
-export default function EditEntryPage() {
-  const { id } = useParams()
-  const router = useRouter()
-
-  const [entry, setEntry] = useState<Entry | null>(null)
+export default function EditEntry() {
   const [content, setContent] = useState('')
-  const [tagsText, setTagsText] = useState('')
+  const [entry, setEntry] = useState<Entry | null>(null)
+  const [tags, setTags] = useState('')
+  const router = useRouter()
+  const params = useParams()
+  const entryId = params?.id as string
 
   useEffect(() => {
     const saved: Entry[] = JSON.parse(localStorage.getItem('entries') || '[]')
-    const found = saved.find((e) => e.id === id)
-    if (found) {
-      setEntry(found)
-      setContent(found.content)
-      setTagsText((found.tags || []).join(', '))
+    const target = saved.find((e) => e.id === entryId)
+    if (target) {
+      setEntry(target)
+      setContent(target.content)
+      setTags((target.tags || []).join(', '))
     }
-  }, [id])
+  }, [entryId])
 
   const handleSave = () => {
     if (!entry) return
+
+    if (content.trim().length < 100) {
+      alert('内容は100文字以上入力してください。')
+      return
+    }
+
     const updatedEntry: Entry = {
       ...entry,
       content,
       updatedAt: new Date().toISOString(),
-      tags: tagsText
-        .split(',')
-        .map((tag) => tag.trim())
-        .filter((tag) => tag !== ''),
+      tags: tags.split(',').map((tag) => tag.trim()).filter((tag) => tag !== ''),
     }
+
     const saved: Entry[] = JSON.parse(localStorage.getItem('entries') || '[]')
     const updated = saved.map((e) => (e.id === entry.id ? updatedEntry : e))
     localStorage.setItem('entries', JSON.stringify(updated))
     router.push('/')
   }
 
-  if (!entry) return <p className="p-4">読み込み中...</p>
-
   return (
     <main className="p-6 max-w-xl mx-auto">
-      <h2 className="text-xl font-semibold mb-4">✏️ エントリを編集</h2>
-
+      <h1 className="text-xl font-bold mb-4">エントリを編集</h1>
       <textarea
-        className="w-full border p-2 rounded min-h-[150px]"
         value={content}
         onChange={(e) => setContent(e.target.value)}
+        className="w-full h-40 p-2 border rounded mb-4"
       />
-
       <input
-        className="w-full border p-2 rounded mt-4"
+        value={tags}
+        onChange={(e) => setTags(e.target.value)}
         placeholder="タグ（カンマ区切り）"
-        value={tagsText}
-        onChange={(e) => setTagsText(e.target.value)}
+        className="w-full p-2 border rounded mb-4"
       />
-
       <button
         onClick={handleSave}
-        className="mt-4 bg-green-600 text-white px-4 py-2 rounded"
+        className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded"
       >
-        保存して戻る
+        保存
       </button>
     </main>
   )
