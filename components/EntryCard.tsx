@@ -2,73 +2,87 @@
 
 import Link from "next/link"
 import ReactMarkdown from "react-markdown"
+import remarkGfm from "remark-gfm"
+import rehypeRaw from "rehype-raw"
+import rehypeHighlight from "rehype-highlight"
 import { useRouter } from "next/navigation"
+import { useState } from "react"
 
 type Entry = {
   id: string
   date: string
-  content: string
   updatedAt?: string
+  content: string
   tags?: string[]
 }
 
-type Props = {
-  entry: Entry
-}
-
-export default function EntryCard({ entry }: Props) {
+export default function EntryCard({ entry }: { entry: Entry }) {
   const router = useRouter()
-
-  const created = new Date(entry.date).toLocaleString('ja-JP', { hour12: false })
-  const updated = entry.updatedAt
-    ? new Date(entry.updatedAt).toLocaleString('ja-JP', { hour12: false })
-    : null
+  const [showFull, setShowFull] = useState(false)
 
   const handleDelete = () => {
-    const confirmed = window.confirm('このエントリを削除してもよいですか？')
-    if (!confirmed) return
+    const confirmDelete = confirm("本当に削除しますか？")
+    if (!confirmDelete) return
 
-    const saved = JSON.parse(localStorage.getItem('entries') || '[]') as Entry[]
-    const updatedEntries = saved.filter((e) => e.id !== entry.id)
-    localStorage.setItem('entries', JSON.stringify(updatedEntries))
+    const saved: Entry[] = JSON.parse(localStorage.getItem('entries') || '[]')
+    const updated = saved.filter((e) => e.id !== entry.id)
+    localStorage.setItem('entries', JSON.stringify(updated))
     router.refresh()
   }
 
+  const contentToDisplay = showFull
+    ? entry.content
+    : entry.content.length > 200
+      ? entry.content.slice(0, 200) + '...'
+      : entry.content
+
   return (
     <div className="border rounded p-4 bg-white shadow">
-      <div className="flex justify-end gap-4 text-xs text-gray-500 mb-2">
-        <span>🕒 作成: {created}</span>
-        {updated && <span>✏️ 編集: {updated}</span>}
+      <div className="flex justify-end text-xs text-gray-500 space-x-4 mb-2">
+        <span>🕒 作成: {new Date(entry.date).toLocaleString()}</span>
+        {entry.updatedAt && (
+          <span>✏️ 編集: {new Date(entry.updatedAt).toLocaleString()}</span>
+        )}
       </div>
 
-      <div className="prose prose-sm line-clamp-5">
-        <ReactMarkdown>
-          {entry.content.length > 100
-            ? entry.content.slice(0, 100) + '...'
-            : entry.content}
+      <div className="prose prose-sm max-w-none">
+        <ReactMarkdown
+          remarkPlugins={[remarkGfm]}
+          rehypePlugins={[rehypeRaw, rehypeHighlight]}
+        >
+          {contentToDisplay}
         </ReactMarkdown>
       </div>
 
+      {!showFull && entry.content.length > 200 && (
+        <button
+          onClick={() => setShowFull(true)}
+          className="mt-2 text-xs text-blue-600 hover:underline"
+        >
+          ...続きを読む
+        </button>
+      )}
+
       {entry.tags && entry.tags.length > 0 && (
-        <div className="mt-2 flex flex-wrap gap-2">
-          {entry.tags.map((tag, idx) => (
-            <span key={idx} className="bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-0.5 rounded">
+        <div className="mt-4 flex flex-wrap gap-2">
+          {entry.tags.map((tag) => (
+            <span key={tag} className="bg-gray-200 text-gray-700 px-2 py-1 text-xs rounded">
               #{tag}
             </span>
           ))}
         </div>
       )}
 
-      <div className="mt-4 flex justify-end space-x-4 text-sm">
+      <div className="mt-4 text-right space-x-4">
         <Link
           href={`/edit/${entry.id}`}
-          className="text-blue-600 hover:underline"
+          className="text-sm text-blue-600 hover:underline"
         >
-          編集
+          編集する
         </Link>
         <button
           onClick={handleDelete}
-          className="text-red-500 hover:underline"
+          className="text-sm text-red-500 hover:underline"
         >
           削除
         </button>
