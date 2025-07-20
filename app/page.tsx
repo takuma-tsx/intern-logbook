@@ -18,11 +18,15 @@ export default function Home() {
   const [searchTerm, setSearchTerm] = useState<string>('')
 
   useEffect(() => {
-    const saved = JSON.parse(localStorage.getItem('entries') || '[]')
-    // 日付が新しい順に並び替え
+    const saved: Entry[] = JSON.parse(localStorage.getItem('entries') || '[]')
+
+    // updatedAtがあればそれを基準に、なければdateで新しい順に並び替え
     const sorted = saved.sort(
-      (a: Entry, b: Entry) => new Date(b.date).getTime() - new Date(a.date).getTime()
+      (a, b) =>
+        new Date(b.updatedAt || b.date).getTime() -
+        new Date(a.updatedAt || a.date).getTime()
     )
+
     setEntries(sorted)
   }, [])
 
