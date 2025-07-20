@@ -17,7 +17,7 @@ export default function EditEntryPage() {
 
   const [entry, setEntry] = useState<Entry | null>(null)
   const [content, setContent] = useState('')
-  const [tags, setTags] = useState('')
+  const [tagsText, setTagsText] = useState('')
 
   useEffect(() => {
     const saved: Entry[] = JSON.parse(localStorage.getItem('entries') || '[]')
@@ -25,7 +25,7 @@ export default function EditEntryPage() {
     if (found) {
       setEntry(found)
       setContent(found.content)
-      setTags(found.tags?.join(', ') || '')
+      setTagsText((found.tags || []).join(', '))
     }
   }, [id])
 
@@ -35,12 +35,11 @@ export default function EditEntryPage() {
       ...entry,
       content,
       updatedAt: new Date().toISOString(),
-      tags: tags
+      tags: tagsText
         .split(',')
         .map((tag) => tag.trim())
         .filter((tag) => tag !== ''),
     }
-
     const saved: Entry[] = JSON.parse(localStorage.getItem('entries') || '[]')
     const updated = saved.map((e) => (e.id === entry.id ? updatedEntry : e))
     localStorage.setItem('entries', JSON.stringify(updated))
@@ -52,18 +51,20 @@ export default function EditEntryPage() {
   return (
     <main className="p-6 max-w-xl mx-auto">
       <h2 className="text-xl font-semibold mb-4">✏️ エントリを編集</h2>
+
       <textarea
         className="w-full border p-2 rounded min-h-[150px]"
         value={content}
         onChange={(e) => setContent(e.target.value)}
       />
+
       <input
-        type="text"
-        placeholder="カンマ区切りでタグ入力（例: React,学び）"
         className="w-full border p-2 rounded mt-4"
-        value={tags}
-        onChange={(e) => setTags(e.target.value)}
+        placeholder="タグ（カンマ区切り）"
+        value={tagsText}
+        onChange={(e) => setTagsText(e.target.value)}
       />
+
       <button
         onClick={handleSave}
         className="mt-4 bg-green-600 text-white px-4 py-2 rounded"
