@@ -37,7 +37,7 @@ export default function EntryCard({ entry }: { entry: Entry }) {
       : entry.content
 
   return (
-    <div className="border rounded p-4 bg-white shadow">
+    <div className="border rounded p-4 bg-white shadow break-after-page">
       <div className="flex justify-end text-xs text-gray-500 space-x-4 mb-2">
         <span>🕒 作成: {new Date(entry.date).toLocaleString()}</span>
         {entry.updatedAt && (
