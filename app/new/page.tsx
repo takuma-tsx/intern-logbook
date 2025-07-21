@@ -19,7 +19,7 @@ export default function NewEntry() {
 
   const handleSave = () => {
     if (content.trim().length < 50) {
-      alert('内容は100文字以上入力してください。')
+      alert('内容は50文字以上入力してください。')
       return
     }
 

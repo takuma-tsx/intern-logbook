@@ -43,3 +43,45 @@ body {
     print-color-adjust: exact;
   }
 }
+@media print {
+  body {
+    background-color: white;
+    font-size: 12pt;
+    line-height: 1.6;
+    color: black;
+    padding: 0;
+    margin: 0;
+  }
+
+  main {
+    padding: 0;
+    max-width: 100%;
+  }
+
+  .prose {
+    font-size: 1rem !important;
+    line-height: 1.75rem !important;
+  }
+
+  .no-print {
+    display: none !important;
+  }
+
+  .print-card {
+    page-break-inside: avoid;
+    break-inside: avoid;
+    border: 1px solid #ccc;
+    margin-bottom: 24px;
+    padding: 16px;
+    background: white;
+  }
+
+  .text-xs, .text-sm {
+    font-size: 10pt !important;
+  }
+
+  button, a {
+    color: inherit !important;
+    text-decoration: none !important;
+  }
+}
