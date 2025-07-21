@@ -37,7 +37,7 @@ export default function EntryCard({ entry }: { entry: Entry }) {
       : entry.content
 
   return (
-    <div className="border rounded p-4 bg-white shadow break-after-page">
+    <div className="border rounded p-4 bg-white shadow">
       <div className="flex justify-end text-xs text-gray-500 space-x-4 mb-2">
         <span>🕒 作成: {new Date(entry.date).toLocaleString()}</span>
         {entry.updatedAt && (
@@ -57,7 +57,7 @@ export default function EntryCard({ entry }: { entry: Entry }) {
       {!showFull && entry.content.length > 200 && (
         <button
           onClick={() => setShowFull(true)}
-          className="mt-2 text-xs text-blue-600 hover:underline"
+          className="mt-2 text-xs text-blue-600 hover:underline print:hidden"
         >
           ...続きを読む
         </button>
@@ -76,7 +76,8 @@ export default function EntryCard({ entry }: { entry: Entry }) {
           ))}
         </div>
       )}
-      <div className="mt-4 text-right space-x-4">
+
+      <div className="mt-4 text-right space-x-4 print:hidden">
         <Link
           href={`/edit/${entry.id}`}
           className="text-sm text-blue-600 hover:underline"

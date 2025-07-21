@@ -60,7 +60,8 @@ export default function Home() {
       <h1 className="text-2xl font-bold mb-4">📘 Intern Logbook</h1>
       <p className="mb-4 text-gray-500 text-sm">気づきや学びを記録しよう。</p>
 
-      <div className="flex gap-2 flex-wrap mb-4">
+      {/* 非表示: 編集・エクスポートボタン */}
+      <div className="flex gap-2 flex-wrap mb-4 print:hidden">
         <Link
           href="/new"
           className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded"
@@ -75,16 +76,18 @@ export default function Home() {
         </button>
       </div>
 
+      {/* 非表示: 検索フィールド */}
       <input
         type="text"
         placeholder="キーワードで検索"
         value={searchTerm}
         onChange={(e) => setSearchTerm(e.target.value)}
-        className="w-full border px-3 py-2 rounded text-sm mb-4"
+        className="w-full border px-3 py-2 rounded text-sm mb-4 print:hidden"
       />
 
+      {/* 非表示: タグフィルタ */}
       {allTags.length > 0 && (
-        <div className="mb-4 flex flex-wrap gap-2">
+        <div className="mb-4 flex flex-wrap gap-2 print:hidden">
           <button
             onClick={() => setSelectedTag(null)}
             className={`px-3 py-1 rounded border ${

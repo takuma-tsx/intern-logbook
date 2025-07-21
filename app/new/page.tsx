@@ -18,7 +18,7 @@ export default function NewEntry() {
   const router = useRouter()
 
   const handleSave = () => {
-    if (content.trim().length < 100) {
+    if (content.trim().length < 50) {
       alert('内容は100文字以上入力してください。')
       return
     }
